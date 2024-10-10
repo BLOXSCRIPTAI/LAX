@@ -11146,3 +11146,8 @@ end)()
 
 -- Start
 Main.Init()
+
+
+
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Universal/Bypasses.lua", true))()

@@ -1,3 +1,7 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -15,7 +19,7 @@ local TargetPlayer = nil
 local RightMouseButtonHeld = false
 
 local DebugLineEnabled = true
-local ainmbotenabled = true
+local aimbotenabled = true
 
 local Circle = Drawing.new("Circle")
 Circle.Visible = true
@@ -28,7 +32,7 @@ Circle.Transparency = 1
 
 local DebugLine = Drawing.new("Line")
 DebugLine.Color = Color3.fromRGB(255, 255, 255)
-DebugLine.Thickness = 0
+DebugLine.Thickness = 1
 DebugLine.Transparency = 1
 DebugLine.Visible = false
 
@@ -94,18 +98,27 @@ local function predictFuturePosition(targetPosition, targetVelocity, bulletSpeed
     local travelTime = distance / bulletSpeed
     local futurePosition = targetVelocity * travelTime * 1.054
     futurePosition = futurePosition + targetPosition
+
+    -- Add 2 studs if the target is moving
+    if targetVelocity.Magnitude > 0 then
+        futurePosition = futurePosition + (targetVelocity.Unit * 2) -- Add 2 studs in the direction of movement
+    end
+
     local drop = Gravity * travelTime ^ 2 * 1.052
     futurePosition = futurePosition + Vector3.new(0, drop, 0)
 
     return futurePosition
 end
 
+local function smoothAim(currentPosition, targetPosition, smoothFactor)
+    return currentPosition:Lerp(targetPosition, smoothFactor)
+end
+
 local function aimAtTarget()
     if not TargetPlayer or not TargetPlayer.Character then return end
 
     local serverColliderHead = TargetPlayer.Character:FindFirstChild("ServerColliderHead")
-    
-    if serverColliderHead and ainmbotenabled ~= false then
+    if serverColliderHead and aimbotenabled then
         local targetPosition = serverColliderHead.Position
         local targetVelocity = serverColliderHead.Velocity or Vector3.new(0, 0, 0)
 
@@ -118,7 +131,10 @@ local function aimAtTarget()
         local deltaX = screenPoint.X - mouseX
         local deltaY = screenPoint.Y - mouseY
 
-        mousemoverel(deltaX, deltaY)
+        -- Smoothing the aim
+        local smoothFactor = 0.4 -- Adjust this value to change the smoothness (0.0 to 1.0)
+        local newMousePos = smoothAim(Vector2.new(mouseX, mouseY), Vector2.new(screenPoint.X, screenPoint.Y), smoothFactor)
+        mousemoverel(newMousePos.X - mouseX, newMousePos.Y - mouseY)
     end
 end
 
@@ -130,10 +146,9 @@ local function updateDebugLine()
 
     local nearestTarget = findNearestTargetToMouse()
 
-    if nearestTarget and nearestTarget.Character and DebugLineEnabled ~= false then
+    if nearestTarget and nearestTarget.Character and DebugLineEnabled then
         local serverColliderHead = nearestTarget.Character:FindFirstChild("ServerColliderHead")
-        
-        if serverColliderHead and DebugLineEnabled ~= false then
+        if serverColliderHead and DebugLineEnabled then
             local targetPosition = serverColliderHead.Position
             local targetVelocity = serverColliderHead.Velocity or Vector3.new(0, 0, 0)
 
@@ -155,7 +170,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
     if not processed then
         if input.UserInputType == Enum.UserInputType.MouseButton2 then
             RightMouseButtonHeld = true
-        elseif input.KeyCode == Enum.KeyCode.D then
+        elseif input.KeyCode == Enum.KeyCode.F1 then
             DebugLineEnabled = not DebugLineEnabled
         end
     end

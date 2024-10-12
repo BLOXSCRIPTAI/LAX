@@ -12,7 +12,7 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local player = LocalPlayer
 
-local CircleRadius = 140
+local CircleRadius = 200
 local Gravity = 50
 local BulletSpeed = 2200
 local TargetPlayer = nil
@@ -23,17 +23,17 @@ local aimbotenabled = true
 
 local Circle = Drawing.new("Circle")
 Circle.Visible = true
-Circle.Color = Color3.fromRGB(255, 255, 255)
+Circle.Color = Color3.fromRGB(25, 100, 150)
 Circle.Thickness = 2
 Circle.NumSides = 60
 Circle.Radius = CircleRadius
 Circle.Filled = false
-Circle.Transparency = 1
+Circle.Transparency = 0.5
 
 local DebugLine = Drawing.new("Line")
 DebugLine.Color = Color3.fromRGB(255, 255, 255)
-DebugLine.Thickness = 1
-DebugLine.Transparency = 1
+DebugLine.Thickness = 1.37245732654235462357645276
+DebugLine.Transparency = 0.8
 DebugLine.Visible = false
 
 local PlayersList = {}
@@ -101,7 +101,7 @@ local function predictFuturePosition(targetPosition, targetVelocity, bulletSpeed
 
     -- Add 2 studs if the target is moving
     if targetVelocity.Magnitude > 0 then
-        futurePosition = futurePosition + (targetVelocity.Unit * 2) -- Add 2 studs in the direction of movement
+        futurePosition = futurePosition + (targetVelocity.Unit * 1.5) -- Add 2 studs in the direction of movement
     end
 
     local drop = Gravity * travelTime ^ 2 * 1.052

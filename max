@@ -70,7 +70,7 @@ do
             if processedEvent then
                 return nil
             end
-            if input.KeyCode == Enum.KeyCode.K then
+            if input.KeyCode == Enum.KeyCode.F3 then
                 toggle = not toggle
             end
         end)
